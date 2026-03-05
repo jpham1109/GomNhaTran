@@ -44,7 +44,7 @@ export default function SmartLink({ link, children, ...rest }: SmartLinkProps) {
       <a
         href={href}
         target={openInNewTab ? '_blank' : undefined}
-        rel="noopener noreferrer"
+        rel={openInNewTab ? 'noopener noreferrer' : 'noopener'}
         {...rest}
       >
         {children}
