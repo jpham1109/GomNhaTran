@@ -14,13 +14,21 @@
  * All consumer code must handle null gracefully.
  */
 
+import { cache } from 'react'
 import { sanityFetch } from './client'
+
+// All fetch functions are wrapped with React cache() for per-request deduplication.
+// This is safe for published content. If you add draft/preview fetches, do NOT
+// wrap them with cache() — or include the preview token/mode as a parameter so
+// each mode caches separately.
 import type {
   SanitySiteSettings,
   SanityNavigation,
   SanityHomePage,
   SanityProduct,
   SanityCollection,
+  SanityAboutPage,
+  SanityContactPage,
 } from './types'
 
 // ── Reusable GROQ fragments ────────────────────────────────────────────────
@@ -85,18 +93,19 @@ export const SITE_SETTINGS_QUERY = `
   }
 `
 
-export async function getSiteSettings(): Promise<SanitySiteSettings | null> {
+export const getSiteSettings = cache(async function getSiteSettings(): Promise<SanitySiteSettings | null> {
   return sanityFetch<SanitySiteSettings | null>({
     query: SITE_SETTINGS_QUERY,
     tags: ['siteSettings'],
   })
-}
+})
 
 // ── Navigation ─────────────────────────────────────────────────────────────
 
 export const NAVIGATION_QUERY = `
   *[_type == "navigation"][0] {
     "mainNav": mainNav[] {
+      _key,
       label,
       "link": link {
         ${LINK_FIELDS}
@@ -105,12 +114,12 @@ export const NAVIGATION_QUERY = `
   }
 `
 
-export async function getNavigation(): Promise<SanityNavigation | null> {
+export const getNavigation = cache(async function getNavigation(): Promise<SanityNavigation | null> {
   return sanityFetch<SanityNavigation | null>({
     query: NAVIGATION_QUERY,
     tags: ['navigation'],
   })
-}
+})
 
 // ── Home Page ──────────────────────────────────────────────────────────────
 
@@ -169,12 +178,12 @@ export const HOME_PAGE_QUERY = `
   }
 `
 
-export async function getHomePage(): Promise<SanityHomePage | null> {
+export const getHomePage = cache(async function getHomePage(): Promise<SanityHomePage | null> {
   return sanityFetch<SanityHomePage | null>({
     query: HOME_PAGE_QUERY,
     tags: ['homePage'],
   })
-}
+})
 
 // ── Product by Slug ────────────────────────────────────────────────────────
 
@@ -211,13 +220,13 @@ export const PRODUCT_BY_SLUG_QUERY = `
   }
 `
 
-export async function getProductBySlug(slug: string): Promise<SanityProduct | null> {
+export const getProductBySlug = cache(async function getProductBySlug(slug: string): Promise<SanityProduct | null> {
   return sanityFetch<SanityProduct | null>({
     query: PRODUCT_BY_SLUG_QUERY,
     params: { slug },
     tags: ['product'],
   })
-}
+})
 
 // ── Collection by Slug ─────────────────────────────────────────────────────
 //
@@ -252,10 +261,104 @@ export const COLLECTION_BY_SLUG_QUERY = `
   }
 `
 
-export async function getCollectionBySlug(slug: string): Promise<SanityCollection | null> {
+export const getCollectionBySlug = cache(async function getCollectionBySlug(slug: string): Promise<SanityCollection | null> {
   return sanityFetch<SanityCollection | null>({
     query: COLLECTION_BY_SLUG_QUERY,
     params: { slug },
     tags: ['collection'],
   })
-}
+})
+
+// ── About Page ─────────────────────────────────────────────────────────────
+
+const STORY_SECTION_FIELDS = `
+  headline,
+  "body": body[] {
+    _type,
+    _key,
+    style,
+    listItem,
+    level,
+    children[] {
+      _type,
+      _key,
+      text,
+      marks
+    },
+    markDefs[] {
+      _type,
+      _key,
+      linkType,
+      "internalLink": internalLink-> {
+        _type,
+        "slug": slug.current
+      },
+      href
+    }
+  },
+  "images": images[] {
+    ${IMAGE_FIELDS}
+  }
+`
+
+const PROCESS_SECTION_FIELDS = `
+  headline,
+  "steps": steps[] {
+    _key,
+    title,
+    body
+  }
+`
+
+export const ABOUT_PAGE_QUERY = `
+  *[_type == "aboutPage"][0] {
+    "hero": hero {
+      headline,
+      subheadline,
+      "image": image {
+        ${IMAGE_FIELDS}
+      },
+      "cta": cta {
+        ${CTA_FIELDS}
+      }
+    },
+    "story": story {
+      ${STORY_SECTION_FIELDS}
+    },
+    "process": process {
+      ${PROCESS_SECTION_FIELDS}
+    },
+    "seo": seo {
+      ${SEO_FIELDS}
+    }
+  }
+`
+
+export const getAboutPage = cache(async function getAboutPage(): Promise<SanityAboutPage | null> {
+  return sanityFetch<SanityAboutPage | null>({
+    query: ABOUT_PAGE_QUERY,
+    tags: ['aboutPage'],
+  })
+})
+
+// ── Contact Page ───────────────────────────────────────────────────────────
+
+export const CONTACT_PAGE_QUERY = `
+  *[_type == "contactPage"][0] {
+    headline,
+    subheadline,
+    email,
+    formEnabled,
+    studioAddress,
+    "seo": seo {
+      ${SEO_FIELDS}
+    }
+  }
+`
+
+export const getContactPage = cache(async function getContactPage(): Promise<SanityContactPage | null> {
+  return sanityFetch<SanityContactPage | null>({
+    query: CONTACT_PAGE_QUERY,
+    tags: ['contactPage'],
+  })
+})

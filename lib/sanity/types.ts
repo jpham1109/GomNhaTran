@@ -50,6 +50,7 @@ export type SanityCta = {
 }
 
 export type SanityNavItem = {
+  _key: string
   label: string
   link: SanityLink
 }
@@ -207,5 +208,42 @@ export type SanityCollection = {
   description: string | null
   coverImage: SanityImage
   products: SanityProductCard[]
+  seo: SanitySeo | null
+}
+
+// ── Section types (aboutPage) ──────────────────────────────────────────────
+
+export type SanityProcessStep = {
+  _key: string
+  title: string
+  body: string
+}
+
+export type SanityStorySection = {
+  headline: string | null
+  body: SanityPortableTextBlock[] | null
+  images: SanityImage[]
+}
+
+export type SanityProcessSection = {
+  headline: string | null
+  steps: SanityProcessStep[]
+}
+
+// ── Full document types (aboutPage, contactPage) ───────────────────────────
+
+export type SanityAboutPage = {
+  hero: SanityHeroSection
+  story: SanityStorySection | null
+  process: SanityProcessSection | null
+  seo: SanitySeo | null
+}
+
+export type SanityContactPage = {
+  headline: string
+  subheadline: string | null
+  email: string
+  formEnabled: boolean
+  studioAddress: string | null
   seo: SanitySeo | null
 }
