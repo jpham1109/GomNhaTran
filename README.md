@@ -185,6 +185,9 @@ lib/
     client.ts
     queries.ts
     types.ts
+  links/
+    resolveLink.ts
+    getSafeHref.ts
 
 schemas/
   documents/
@@ -218,7 +221,11 @@ Required variables:
 ```
 NEXT_PUBLIC_SANITY_PROJECT_ID=
 NEXT_PUBLIC_SANITY_DATASET=
-SANITY_API_READ_TOKEN=
+```
+
+Optional variables:
+```
+SANITY_API_READ_TOKEN=   # only needed for draft/preview mode
 ```
 Start dev server
 
@@ -234,12 +241,12 @@ Studio
 
 
 ## Roadmap
-### Phase 1 (current)
+### Phase 1 (in progress)
 
-- Homepage
-- Collections
-- Products
-- Inquiry workflow
+- Homepage ✓
+- Collections ✓
+- Products (not yet built)
+- Inquiry workflow (not yet built)
 
 ### Phase 2
 
