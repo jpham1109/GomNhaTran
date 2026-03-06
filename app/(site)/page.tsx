@@ -24,7 +24,7 @@ export default async function HomePage() {
 
   return (
     <main>
-      <HeroSection hero={page.hero} />
+      <HeroSection hero={page.hero} priority />
       {page.featuredCollections && (
         <FeaturedCollectionsSection section={page.featuredCollections} />
       )}
