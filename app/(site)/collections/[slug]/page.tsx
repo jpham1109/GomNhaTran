@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { getCollectionBySlug, getSiteSettings } from '@/lib/sanity/queries'
+import { buildMetadata } from '@/lib/metadata'
 import ProductCard from '@/components/ProductCard'
 
 type Props = {
@@ -14,13 +15,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getCollectionBySlug(slug),
     getSiteSettings(),
   ])
-  const seo = collection?.seo
-  const defaultSeo = settings?.defaultSeo
-  return {
-    title: seo?.metaTitle ?? collection?.title ?? defaultSeo?.metaTitle ?? settings?.siteTitle ?? undefined,
-    description: seo?.metaDescription ?? collection?.description ?? defaultSeo?.metaDescription ?? undefined,
-    openGraph: seo?.ogImage ? { images: [{ url: seo.ogImage.url }] } : undefined,
-  }
+  return buildMetadata({
+    seo: collection?.seo,
+    defaultSeo: settings?.defaultSeo,
+    siteTitle: settings?.siteTitle,
+    fallbackTitle: collection?.title,
+    fallbackDescription: collection?.description,
+  })
 }
 
 export default async function CollectionPage({ params }: Props) {

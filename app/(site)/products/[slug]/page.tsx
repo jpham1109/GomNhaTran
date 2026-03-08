@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getProductBySlug, getSiteSettings } from '@/lib/sanity/queries'
+import { buildMetadata } from '@/lib/metadata'
 import { resolveInternalHref } from '@/lib/links/resolveLink'
 import PricingDisplay from '@/components/PricingDisplay'
 import PortableTextRenderer from '@/components/PortableTextRenderer'
@@ -17,17 +18,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     getProductBySlug(slug),
     getSiteSettings(),
   ])
-  const seo = product?.seo
-  const defaultSeo = settings?.defaultSeo
-  return {
-    title: seo?.metaTitle ?? product?.title ?? defaultSeo?.metaTitle ?? settings?.siteTitle ?? undefined,
-    description: seo?.metaDescription ?? defaultSeo?.metaDescription ?? undefined,
-    openGraph: seo?.ogImage
-      ? { images: [{ url: seo.ogImage.url }] }
-      : product?.images[0]
-      ? { images: [{ url: product.images[0].url }] }
-      : undefined,
-  }
+  return buildMetadata({
+    seo: product?.seo,
+    defaultSeo: settings?.defaultSeo,
+    siteTitle: settings?.siteTitle,
+    fallbackTitle: product?.title,
+    fallbackOgImageUrl: product?.images[0]?.url,
+  })
 }
 
 export default async function ProductPage({ params }: Props) {

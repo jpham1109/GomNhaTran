@@ -1,19 +1,19 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { getAboutPage, getSiteSettings } from '@/lib/sanity/queries'
+import { buildMetadata } from '@/lib/metadata'
 import HeroSection from '@/components/sections/HeroSection'
 import StorySection from '@/components/sections/StorySection'
 import ProcessSection from '@/components/sections/ProcessSection'
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, settings] = await Promise.all([getAboutPage(), getSiteSettings()])
-  const seo = page?.seo
-  const defaultSeo = settings?.defaultSeo
-  return {
-    title: seo?.metaTitle ?? defaultSeo?.metaTitle ?? settings?.siteTitle ?? undefined,
-    description: seo?.metaDescription ?? defaultSeo?.metaDescription ?? undefined,
-    openGraph: seo?.ogImage ? { images: [{ url: seo.ogImage.url }] } : undefined,
-  }
+  return buildMetadata({
+    seo: page?.seo,
+    defaultSeo: settings?.defaultSeo,
+    siteTitle: settings?.siteTitle,
+    fallbackOgImageUrl: page?.hero?.image?.url,
+  })
 }
 
 export default async function AboutPage() {
