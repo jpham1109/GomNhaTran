@@ -2,16 +2,16 @@ import type { Metadata } from 'next'
 import type { SanitySeo } from '@/lib/sanity/types'
 
 function clean(value: string | null | undefined) {
-  return value?.trim() || undefined
+	return value?.trim() || undefined
 }
 
 type BuildMetadataOptions = {
-  seo: SanitySeo | null | undefined
-  defaultSeo: SanitySeo | null | undefined
-  siteTitle: string | null | undefined
-  fallbackTitle?: string | null
-  fallbackDescription?: string | null
-  fallbackOgImageUrl?: string | null
+	seo: SanitySeo | null | undefined
+	defaultSeo: SanitySeo | null | undefined
+	siteTitle: string | null | undefined
+	fallbackTitle?: string | null
+	fallbackDescription?: string | null
+	fallbackOgImageUrl?: string | null
 }
 
 // Utility for building Next.js Metadata with consistent fallback behavior.
@@ -37,17 +37,24 @@ type BuildMetadataOptions = {
 // OG Image:
 //   page seo → route fallback
 export function buildMetadata({
-  seo,
-  defaultSeo,
-  siteTitle,
-  fallbackTitle,
-  fallbackDescription,
-  fallbackOgImageUrl,
+	seo,
+	defaultSeo,
+	siteTitle,
+	fallbackTitle,
+	fallbackDescription,
+	fallbackOgImageUrl,
 }: BuildMetadataOptions): Metadata {
-  const ogImageUrl = clean(seo?.ogImage?.url) || clean(fallbackOgImageUrl)
-  return {
-    title: clean(seo?.metaTitle) || clean(fallbackTitle) || clean(defaultSeo?.metaTitle) || clean(siteTitle),
-    description: clean(seo?.metaDescription) || clean(fallbackDescription) || clean(defaultSeo?.metaDescription),
-    openGraph: ogImageUrl ? { images: [{ url: ogImageUrl }] } : undefined,
-  }
+	const ogImageUrl = clean(seo?.ogImage?.url) || clean(fallbackOgImageUrl)
+	return {
+		title:
+			clean(seo?.metaTitle) ||
+			clean(fallbackTitle) ||
+			clean(defaultSeo?.metaTitle) ||
+			clean(siteTitle),
+		description:
+			clean(seo?.metaDescription) ||
+			clean(fallbackDescription) ||
+			clean(defaultSeo?.metaDescription),
+		openGraph: ogImageUrl ? { images: [{ url: ogImageUrl }] } : undefined,
+	}
 }
