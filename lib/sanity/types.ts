@@ -239,11 +239,25 @@ export type SanityAboutPage = {
   seo: SanitySeo | null
 }
 
+export type SanityContactFormConfig = {
+  email: string
+  formEnabled: boolean
+}
+
+export type SanityContactLocation = {
+  _key: string
+  label: string
+  address: string
+}
+
 export type SanityContactPage = {
   headline: string
   subheadline: string | null
   email: string
+  phone: string
+  instagramUrl: string | null
+  facebookUrl: string | null
+  locations: SanityContactLocation[]
   formEnabled: boolean
-  studioAddress: string | null
   seo: SanitySeo | null
 }
