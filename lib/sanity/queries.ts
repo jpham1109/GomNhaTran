@@ -29,6 +29,7 @@ import type {
   SanityCollection,
   SanityAboutPage,
   SanityContactPage,
+  SanityContactFormConfig,
 } from './types'
 
 // ── Reusable GROQ fragments ────────────────────────────────────────────────
@@ -348,8 +349,15 @@ export const CONTACT_PAGE_QUERY = `
     headline,
     subheadline,
     email,
+    phone,
+    instagramUrl,
+    facebookUrl,
+    "locations": locations[] {
+      _key,
+      label,
+      address
+    },
     formEnabled,
-    studioAddress,
     "seo": seo {
       ${SEO_FIELDS}
     }
@@ -359,6 +367,25 @@ export const CONTACT_PAGE_QUERY = `
 export const getContactPage = cache(async function getContactPage(): Promise<SanityContactPage | null> {
   return sanityFetch<SanityContactPage | null>({
     query: CONTACT_PAGE_QUERY,
+    tags: ['contactPage'],
+  })
+})
+
+// ── Contact Form Config ─────────────────────────────────────────────────────
+//
+// Lightweight query used only by the inquiry form server action.
+// Avoids fetching the full contact page on every form submission.
+
+export const CONTACT_FORM_CONFIG_QUERY = `
+  *[_type == "contactPage"][0] {
+    email,
+    formEnabled
+  }
+`
+
+export const getContactFormConfig = cache(async function getContactFormConfig(): Promise<SanityContactFormConfig | null> {
+  return sanityFetch<SanityContactFormConfig | null>({
+    query: CONTACT_FORM_CONFIG_QUERY,
     tags: ['contactPage'],
   })
 })
