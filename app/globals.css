@@ -1,2 +1,96 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+/*
+  Design token consumption guide
+  ─────────────────────────────────────────────────────────────────────────────
+  Tokens defined in @theme serve two purposes:
+
+  1. Utility classes (JSX/TSX)
+     bg-canvas, text-ceramic, font-serif, shadow-panel, border-border-subtle …
+
+  2. Raw CSS variables (CSS rules below, or inline styles)
+     var(--color-canvas), var(--color-text-primary), var(--font-sans) …
+
+  Both are valid. Prefer utility classes in components. Use var() only in
+  global base rules or when Tailwind utilities cannot express the intent.
+  ─────────────────────────────────────────────────────────────────────────────
+*/
+
+@theme {
+  /* ── Fonts ──────────────────────────────────────────────────────────────────
+     Wired to CSS variables exposed by next/font in layout.tsx.
+     --font-heading / --font-body are set on <html> at runtime.
+     Tailwind's font-serif = headings (Playfair Display)
+     Tailwind's font-sans  = body    (Be Vietnam Pro)            */
+  --font-serif: var(--font-heading);
+  --font-sans:  var(--font-body);
+
+  /* ── Brand Canvas ───────────────────────────────────────────────────────── */
+  --color-canvas:       #3F5B2B;
+  --color-canvas-light: #4C6A2E;
+
+  /* ── Ceramic Ivory ──────────────────────────────────────────────────────── */
+  /* For elements placed directly on the canvas: nav links, icon strokes      */
+  --color-ceramic: #F1E6DA;
+
+  /* ── Editorial Panel ────────────────────────────────────────────────────── */
+  --color-panel: #FAF7F2;
+
+  /* ── Text ───────────────────────────────────────────────────────────────── */
+  /* text-primary: inside panels   text-secondary: supporting copy in panels  */
+  --color-text-primary:   #3A2F2A;
+  --color-text-secondary: #6B5F59;
+
+  /* ── Supporting Bamboo Tones ────────────────────────────────────────────── */
+  --color-bamboo-main: #4C6A2E;
+  --color-bamboo-mid:  #607F3E;
+  /* ⚠ bamboo-light is decorative only — contrast ~2.8:1 on panels.
+        Never use for body text or any context requiring AA compliance.       */
+  --color-bamboo-light: #8FA35B;
+
+  /* ── Supporting Accents ─────────────────────────────────────────────────── */
+  /* Sparingly only — details, hover states, badges, dividers, highlights     */
+  --color-brick:   #8C3B2A;
+  --color-clay:    #B88A6A;
+  --color-wood:    #8A684B;
+  --color-celadon: #A8B7A1;
+
+  /* ── UI ─────────────────────────────────────────────────────────────────── */
+  --color-border-subtle:     #E5DED6;
+  --color-image-placeholder: #EFEAE3;
+
+  /* ── Shadows ────────────────────────────────────────────────────────────── */
+  /* shadow-panel utility: soft ambient lift — paper on surface, not card UI  */
+  --shadow-panel: 0 6px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Baseline ───────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  /* Surface first, then text — canvas is the base layer.
+     Ceramic is the canvas-level text default. EditorialPanel overrides
+     to --color-text-primary for all panel content.
+     TODO: add min-height: 100vh once layout is stable to ensure the
+     canvas always fills the viewport on short pages.                        */
+  background-color: var(--color-canvas);
+  color: var(--color-ceramic);
+}
+
+/* Links inherit their context color by default so canvas links stay ceramic
+   and panel links stay text-primary without extra overrides.
+   Underline is suppressed globally — components apply it intentionally.     */
+a {
+  color: inherit;
+  text-decoration: none;
+}
