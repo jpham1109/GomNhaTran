@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getSiteSettings, getNavigation } from '@/lib/sanity/queries'
-import Logo from '@/components/icons/Logo'
+import { Logo } from '@/components/icons/Logo'
 import SmartLink from '@/components/SmartLink'
 import MobileMenu from '@/components/MobileMenu'
 
@@ -18,11 +18,11 @@ export default async function Navbar() {
   const hasCmsNav = mainNav.length > 0
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-stone-200 bg-white">
+    <header className="sticky top-0 z-40 w-full border-b border-bamboo-mid bg-canvas">
       <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
 
         <Link href="/" aria-label={settings?.siteTitle ?? 'Home'}>
-          <Logo className="h-8 w-auto" aria-hidden="true" focusable="false" />
+          <Logo className="h-8 w-auto" />
         </Link>
 
         {/* Desktop nav */}

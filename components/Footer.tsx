@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { getSiteSettings } from '@/lib/sanity/queries'
 import { getSafeHref } from '@/lib/links/getSafeHref'
-import Logo from '@/components/icons/Logo'
+import { Logo } from '@/components/icons/Logo'
 
 export default async function Footer() {
   const settings = await getSiteSettings()
@@ -12,7 +12,7 @@ export default async function Footer() {
   const hasSocialLinks = instagramHref !== '#' || pinterestHref !== '#'
 
   return (
-    <footer className="border-t border-stone-200 bg-white">
+    <footer className="border-t border-bamboo-mid bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-12 md:px-8">
 
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
@@ -20,7 +20,7 @@ export default async function Footer() {
           {/* Brand */}
           <div className="flex flex-col gap-3">
             <Link href="/" aria-label={settings?.siteTitle ?? 'Home'}>
-              <Logo className="h-7 w-auto" aria-hidden="true" focusable="false" />
+              <Logo className="h-7 w-auto" />
             </Link>
             {settings?.footerTagline && (
               <p className="max-w-xs text-sm text-stone-500">{settings.footerTagline}</p>
