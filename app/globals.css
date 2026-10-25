@@ -63,6 +63,89 @@
   /* ── Shadows ────────────────────────────────────────────────────────────── */
   /* shadow-panel utility: soft ambient lift — paper on surface, not card UI  */
   --shadow-panel: 0 6px 28px rgba(0, 0, 0, 0.08);
+
+  /* ── Type scale ─────────────────────────────────────────────────────────── */
+  /* Fluid editorial scale (approved v0 direction). Utilities: text-display,
+     text-h1 … text-nav. Headings are Playfair at weight 400 (font-normal).
+     Registered in lib/cn.ts so tailwind-merge treats them as font sizes.     */
+  --text-display: clamp(2.75rem, 1.6rem + 4.6vw, 5.75rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.02em;
+  --text-h1: clamp(2.25rem, 1.6rem + 2.6vw, 4rem);
+  --text-h1--line-height: 1.06;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h2: clamp(1.875rem, 1.45rem + 1.7vw, 3rem);
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h3: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+  --text-h3--line-height: 1.2;
+  --text-body-lg: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --text-body-lg--line-height: 1.6;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.35;
+  --text-label--letter-spacing: 0.05em;
+  --text-nav: 0.9375rem;
+  --text-nav--line-height: 1.3;
+
+  /* ── Motion ─────────────────────────────────────────────────────────────── */
+  --ease-calm: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ── Layout rhythm ──────────────────────────────────────────────────────────
+   Page width, side gutter and section spacing step up at md and lg.
+   Consumed via the container-page / px-gutter / section-y / section-b
+   utilities below. Only applied where a component opts in.                 */
+:root {
+  --container-page: 90rem;
+  --gutter: 1.25rem;
+  --section-space: 6rem;
+}
+
+@media (width >= theme(--breakpoint-md)) {
+  :root {
+    --gutter: 2rem;
+    --section-space: 8rem;
+  }
+}
+
+@media (width >= theme(--breakpoint-lg)) {
+  :root {
+    --gutter: 3rem;
+    --section-space: 11rem;
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility px-gutter {
+  padding-inline: var(--gutter);
+}
+
+@utility section-y {
+  padding-block: var(--section-space);
+}
+
+@utility section-b {
+  padding-bottom: var(--section-space);
+}
+
+/* ── Paper surface ──────────────────────────────────────────────────────────
+   The ivory page ground of the approved design. Currently applied per route
+   (Collections) rather than on body, so existing canvas pages are unchanged.
+   Sets the focus ring to bamboo, which reads on ivory (5.8:1).             */
+@utility surface-paper {
+  background-color: var(--color-panel);
+  color: var(--color-text-primary);
+  --focus-ring: var(--color-bamboo-main);
 }
 
 /* ── Baseline ───────────────────────────────────────────────────────────── */
@@ -93,4 +176,87 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Visible focus for keyboard users. Defaults to currentColor so it always
+   matches readable text on whatever surface it sits on (ceramic on canvas,
+   text-primary in panels); surface-paper narrows it to bamboo.
+   Kept in @layer base so utilities such as focus:outline-none still win —
+   unlayered rules would override every Tailwind utility.                   */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--focus-ring, currentColor);
+    outline-offset: 3px;
+  }
+
+  /* Scoped to paper: a bamboo tint is invisible on the bamboo canvas. */
+  .surface-paper ::selection,
+  .surface-paper::selection {
+    background: color-mix(in oklab, var(--color-bamboo-main) 20%, transparent);
+  }
+}
+
+/* ── Vietnamese diacritics ──────────────────────────────────────────────────
+   Stacked tone marks (Ấ, Ổ, Ặ) collide with the line above at tight display
+   leading. Any element whose language resolves to Vietnamese gets more room. */
+.text-display:lang(vi) { line-height: 1.14; }
+.text-h1:lang(vi)      { line-height: 1.16; }
+.text-h2:lang(vi)      { line-height: 1.2; }
+.text-h3:lang(vi)      { line-height: 1.28; }
+
+/* ── Motion ─────────────────────────────────────────────────────────────── */
+
+@layer components {
+  /* Scroll entrance, progressively enhanced by <Reveal>. Content is visible
+     as server-rendered; only once JS has confirmed a block is below the fold
+     does it set data-reveal="hidden", then "shown" as it scrolls in. If JS
+     never runs, nothing is ever hidden. */
+  .reveal {
+    transition:
+      opacity 900ms var(--ease-calm),
+      transform 900ms var(--ease-calm);
+  }
+  .reveal[data-reveal='hidden'] {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /* Staggered rise for page-intro copy, on first paint. */
+  .hero-copy > * {
+    animation: hero-rise 1100ms var(--ease-calm) both;
+  }
+  .hero-copy > *:nth-child(2) { animation-delay: 140ms; }
+  .hero-copy > *:nth-child(3) { animation-delay: 280ms; }
+  .hero-copy > *:nth-child(4) { animation-delay: 420ms; }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal,
+  .reveal[data-reveal='hidden'],
+  .hero-copy > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
 }

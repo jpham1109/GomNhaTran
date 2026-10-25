@@ -11,7 +11,7 @@ type CanvasProps = {
 // ensures the visual contract holds regardless of body inheritance.
 //
 // TODO: layer a subtle organic texture (2–5% opacity) over the canvas once
-// the texture asset and technique are decided. See ai/design-system.md.
+// the texture asset and technique are decided. See docs/project/design-system.md.
 
 export default function Canvas({ children, className = '' }: CanvasProps) {
   return (
