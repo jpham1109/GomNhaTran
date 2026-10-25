@@ -23,10 +23,18 @@ export const client = createClient({
 })
 
 /**
+ * Seconds a cached CMS response is served before Next.js refetches it in the
+ * background. Applies to every query, so all CMS-driven routes (pages and
+ * generateMetadata) pick up published edits within this window without a
+ * redeploy. On-demand revalidation via webhook (tags below) can come later.
+ */
+export const CMS_REVALIDATE_SECONDS = 60
+
+/**
  * Typed fetch wrapper with Next.js App Router cache tag support.
  *
- * Pass `tags` to enable on-demand ISR via `revalidateTag()` from a
- * Sanity webhook. Example:
+ * Responses are cached for CMS_REVALIDATE_SECONDS. Pass `tags` to also enable
+ * on-demand ISR via `revalidateTag()` from a Sanity webhook. Example:
  *   await sanityFetch({ query: PRODUCT_QUERY, params: { slug }, tags: ['product'] })
  *
  * Then in a route handler:
@@ -45,6 +53,6 @@ export async function sanityFetch<T>({
   tags?: string[]
 }): Promise<T> {
   return client.fetch<T>(query, params, {
-    next: { tags },
+    next: { revalidate: CMS_REVALIDATE_SECONDS, tags },
   })
 }

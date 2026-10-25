@@ -435,6 +435,10 @@ Ceramics photography should feel natural and material:
   `surface-paper` sets the ring to `bamboo-main`. Cards with a stretched link draw the ring on
   the card (`has-[a:focus-visible]`) rather than on the link.
 - Cards with a stretched link have one tab stop whose accessible name is the title.
+- **Sticky header offset:** `--header-height` (6.5rem, the Navbar's rendered height) drives
+  `html { scroll-padding-top: calc(var(--header-height) + 1rem) }`, so focus, anchor and
+  `scrollIntoView` targets never land under the sticky header (WCAG 2.4.11). Update the token
+  whenever the Navbar height changes.
 
 ---
 

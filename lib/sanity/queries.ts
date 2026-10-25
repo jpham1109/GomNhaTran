@@ -27,6 +27,8 @@ import type {
   SanityHomePage,
   SanityProduct,
   SanityCollection,
+  SanityCollectionPreview,
+  SanityCollectionsPage,
   SanityAboutPage,
   SanityContactPage,
   SanityContactFormConfig,
@@ -42,6 +44,20 @@ const IMAGE_FIELDS = `
   "url": asset.asset->url,
   alt,
   caption
+`
+
+/**
+ * Resolves a collection's coverImage, or null when no asset is attached.
+ * coverImage is required in the schema, but drafts, imports and deleted
+ * assets can still leave it empty — every consumer renders a placeholder.
+ */
+const COLLECTION_COVER = `
+  "coverImage": select(
+    defined(coverImage.asset.asset) => coverImage {
+      ${IMAGE_FIELDS}
+    },
+    null
+  )
 `
 
 /** Resolves a seo object including its ogImage. */
@@ -142,9 +158,7 @@ export const HOME_PAGE_QUERY = `
         title,
         "slug": slug.current,
         description,
-        "coverImage": coverImage {
-          ${IMAGE_FIELDS}
-        }
+        ${COLLECTION_COVER}
       }
     },
     "featuredProducts": featuredProducts {
@@ -240,9 +254,7 @@ export const COLLECTION_BY_SLUG_QUERY = `
     title,
     "slug": slug.current,
     description,
-    "coverImage": coverImage {
-      ${IMAGE_FIELDS}
-    },
+    ${COLLECTION_COVER},
     "products": *[_type == "product" && references(^._id)] | order(_createdAt desc) {
       title,
       "slug": slug.current,
@@ -267,6 +279,49 @@ export const getCollectionBySlug = cache(async function getCollectionBySlug(slug
     query: COLLECTION_BY_SLUG_QUERY,
     params: { slug },
     tags: ['collection'],
+  })
+})
+
+// ── Collections Index ──────────────────────────────────────────────────────
+//
+// All published collections, oldest first, so new collections append to the
+// end of the gallery.
+
+export const COLLECTIONS_INDEX_QUERY = `
+  *[_type == "collection" && defined(slug.current)] | order(_createdAt asc) {
+    title,
+    "slug": slug.current,
+    description,
+    ${COLLECTION_COVER}
+  }
+`
+
+export const getCollections = cache(async function getCollections(): Promise<SanityCollectionPreview[]> {
+  return sanityFetch<SanityCollectionPreview[]>({
+    query: COLLECTIONS_INDEX_QUERY,
+    tags: ['collection'],
+  })
+})
+
+export const COLLECTIONS_PAGE_QUERY = `
+  *[_type == "collectionsPage"][0] {
+    eyebrow,
+    title,
+    intro,
+    emptyMessage,
+    "emptyCta": emptyCta {
+      ${CTA_FIELDS}
+    },
+    "seo": seo {
+      ${SEO_FIELDS}
+    }
+  }
+`
+
+export const getCollectionsPage = cache(async function getCollectionsPage(): Promise<SanityCollectionsPage | null> {
+  return sanityFetch<SanityCollectionsPage | null>({
+    query: COLLECTIONS_PAGE_QUERY,
+    tags: ['collectionsPage'],
   })
 })
 
