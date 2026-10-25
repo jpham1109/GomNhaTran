@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import type { Metadata } from 'next'
 import { getCollectionBySlug, getSiteSettings } from '@/lib/sanity/queries'
 import { buildMetadata } from '@/lib/seo/buildMetadata'
 import ProductCard from '@/components/ProductCard'
+import Media from '@/components/Media'
 
 type Props = {
 	params: Promise<{ slug: string }>
@@ -31,17 +31,13 @@ export default async function CollectionPage({ params }: Props) {
 
 	return (
 		<main>
-			{/* Cover image */}
-			<div className="relative aspect-[16/9] w-full overflow-hidden bg-stone-100">
-				<Image
-					src={collection.coverImage.url}
-					alt={collection.coverImage.alt}
-					fill
-					sizes="100vw"
-					className="object-cover"
-					priority
-				/>
-			</div>
+			{/* Cover image — Media shows a placeholder when no asset is attached */}
+			<Media
+				image={collection.coverImage}
+				sizes="100vw"
+				priority
+				className="aspect-[16/9] w-full"
+			/>
 
 			<div className="mx-auto max-w-7xl px-4 py-12 md:px-8">
 				{/* Header */}

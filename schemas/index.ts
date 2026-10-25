@@ -26,6 +26,7 @@ import navigation from './documents/navigation'
 import homePage from './documents/homePage'
 import product from './documents/product'
 import collection from './documents/collection'
+import collectionsPage from './documents/collectionsPage'
 import aboutPage from './documents/aboutPage'
 import contactPage from './documents/contactPage'
 
@@ -53,6 +54,7 @@ export const schemaTypes = [
   homePage,
   product,
   collection,
+  collectionsPage,
   aboutPage,
   contactPage,
 ]

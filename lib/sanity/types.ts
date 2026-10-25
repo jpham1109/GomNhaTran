@@ -155,13 +155,16 @@ export type SanityProductCard = {
   inStock: boolean
 }
 
-/** Minimal collection shape for listing cards. */
+/** Minimal collection shape for listing cards. coverImage is null when no asset is attached. */
 export type SanityCollectionCard = {
   title: string
   slug: string
   description: string | null
-  coverImage: SanityImage
+  coverImage: SanityImage | null
 }
+
+/** Collection shape for the /collections index — same fields as a listing card. */
+export type SanityCollectionPreview = SanityCollectionCard
 
 // ── Full document types ────────────────────────────────────────────────────
 
@@ -206,7 +209,7 @@ export type SanityCollection = {
   title: string
   slug: string
   description: string | null
-  coverImage: SanityImage
+  coverImage: SanityImage | null
   products: SanityProductCard[]
   seo: SanitySeo | null
 }
@@ -259,5 +262,14 @@ export type SanityContactPage = {
   facebookUrl: string | null
   locations: SanityContactLocation[]
   formEnabled: boolean
+  seo: SanitySeo | null
+}
+
+export type SanityCollectionsPage = {
+  eyebrow: string | null
+  title: string | null
+  intro: string | null
+  emptyMessage: string | null
+  emptyCta: SanityCta | null
   seo: SanitySeo | null
 }
