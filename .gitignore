@@ -6,6 +6,7 @@ dist/
 .DS_Store
 tsconfig.tsbuildinfo
 .claude
+# AI session notes only — canonical docs live in docs/project/
 ai/
 # v0 design export — read-only reference, not part of the app
 v0-import/
