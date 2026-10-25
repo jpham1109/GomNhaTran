@@ -213,7 +213,8 @@ function parsePath(d) {
 function parseTransform(transformStr) {
   if (!transformStr) return null;
 
-  const matrixMatch = transformStr.match(/matrix\(\s*([-\d.e+]+)\s*,\s*([-\d.e+]+)\s*,\s*([-\d.e+]+)\s*,\s*([-\d.e+]+)\s*,\s*([-\d.e+]+)\s*,\s*([-\d.e+]+)\s*\)/);
+  // Accept both comma-separated (Inkscape source) and space-separated (SVGO output)
+  const matrixMatch = transformStr.match(/matrix\(\s*([-\d.e+]+)[\s,]+([-\d.e+]+)[\s,]+([-\d.e+]+)[\s,]+([-\d.e+]+)[\s,]+([-\d.e+]+)[\s,]+([-\d.e+]+)\s*\)/);
   if (matrixMatch) {
     return {
       a: parseFloat(matrixMatch[1]),

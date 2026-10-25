@@ -53,6 +53,12 @@ const TILE6 = {
   label: 'tile 6 (simplified seal)',
 }
 
+// Tight viewBox for seal variants — crops to actual artwork bounds with 15px margin.
+// Derived from compute-bbox.mjs: artwork x 2566–3474, y 370–1630 in SVG coords.
+// Reduces the rendered canvas from 2000×2000 to 938×1290, eliminating the large
+// whitespace padding that made the seal appear small at CSS sizes like h-12.
+const SEAL_TIGHT_VIEWBOX = '2551 355 938 1290'
+
 // ── Pre-processing: extract a single tile ─────────────────────────────────────
 // Runs on the raw Inkscape source string before SVGO so the original
 // comma-separated matrix format is intact and the tx values are exact.
@@ -181,23 +187,26 @@ const boxedRaw = optimize(tile1Src, { plugins: basePlugins })
 const boxed = { data: patchViewBox(boxedRaw.data, TILE1) }
 writeFileSync('components/icons/logo-boxed.svg', boxed.data)
 
+// Seal family uses a tight viewBox derived from compute-bbox.mjs to eliminate the
+// large whitespace padding that would otherwise make the seal appear small at CSS sizes.
+
 // 2. Mark — simplified seal, background intact (tile 6)
 const markRaw = optimize(tile6Src, { plugins: basePlugins })
-const mark = { data: patchViewBox(markRaw.data, TILE6) }
+const mark = { data: patchViewBox(markRaw.data, { viewBox: SEAL_TIGHT_VIEWBOX, label: TILE6.label }) }
 writeFileSync('components/icons/logo-mark.svg', mark.data)
 
 // 3. Transparent — simplified seal, no background (tile 6)
 const { plugin: removeBg, wasFound: bgFound } = makeRemoveBackground(TILE6.bgId)
 const transparentRaw = optimize(tile6Src, { plugins: [...basePlugins, removeBg] })
 assert(bgFound(), `${TILE6.bgId} (background rect) not found in ${TILE6.label}`)
-const transparent = { data: patchViewBox(transparentRaw.data, TILE6) }
+const transparent = { data: patchViewBox(transparentRaw.data, { viewBox: SEAL_TIGHT_VIEWBOX, label: TILE6.label }) }
 writeFileSync('components/icons/logo-transparent.svg', transparent.data)
 
 // 4. Mono — simplified seal, all fills → currentColor (tile 6)
 const { plugin: removeBgMono, wasFound: bgFoundMono } = makeRemoveBackground(TILE6.bgId)
 const monoRaw = optimize(tile6Src, { plugins: [...basePlugins, removeBgMono, convertToCurrentColor] })
 assert(bgFoundMono(), `${TILE6.bgId} not found in mono pass`)
-const mono = { data: patchViewBox(monoRaw.data, TILE6) }
+const mono = { data: patchViewBox(monoRaw.data, { viewBox: SEAL_TIGHT_VIEWBOX, label: TILE6.label }) }
 writeFileSync('components/icons/logo-mono.svg', mono.data)
 
 // ── Validate outputs ──────────────────────────────────────────────────────────
@@ -210,9 +219,9 @@ assert(mono.data.length > 500, 'logo-mono.svg appears empty')
 
 // Correct viewBoxes
 assert(boxed.data.includes(`viewBox="${TILE1.viewBox}"`), 'logo-boxed.svg has wrong viewBox')
-assert(mark.data.includes(`viewBox="${TILE6.viewBox}"`), 'logo-mark.svg has wrong viewBox')
-assert(transparent.data.includes(`viewBox="${TILE6.viewBox}"`), 'logo-transparent.svg has wrong viewBox')
-assert(mono.data.includes(`viewBox="${TILE6.viewBox}"`), 'logo-mono.svg has wrong viewBox')
+assert(mark.data.includes(`viewBox="${SEAL_TIGHT_VIEWBOX}"`), 'logo-mark.svg has wrong viewBox')
+assert(transparent.data.includes(`viewBox="${SEAL_TIGHT_VIEWBOX}"`), 'logo-transparent.svg has wrong viewBox')
+assert(mono.data.includes(`viewBox="${SEAL_TIGHT_VIEWBOX}"`), 'logo-mono.svg has wrong viewBox')
 
 // Transparent: background rect gone
 assert(!transparent.data.includes(`id="${TILE6.bgId}"`), 'logo-transparent.svg still contains background rect')
