@@ -18,11 +18,14 @@ export default async function Navbar() {
   const hasCmsNav = mainNav.length > 0
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-bamboo-mid bg-canvas">
-      <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8">
+    <header className="sticky top-0 z-40 w-full bg-canvas">
+      {/* Full-width row — logo anchors to viewport left, nav links to viewport right.
+          Intentionally not constrained to max-w-7xl so the logo sits further left
+          than the centered content column on wide screens. */}
+      <nav className="relative flex w-full items-center justify-between px-4 py-4 md:px-8">
 
         <Link href="/" aria-label={settings?.siteTitle ?? 'Home'}>
-          <Logo className="h-8 w-auto" />
+          <Logo className="h-18 w-auto" />
         </Link>
 
         {/* Desktop nav */}
