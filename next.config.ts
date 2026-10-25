@@ -1,5 +1,13 @@
 import type { NextConfig } from 'next'
 
+// Disable SVGR's internal SVGO pass globally. The logo variants exported by
+// scripts/optimize-logo.mjs rely on Inkscape's translate(-8080) origin offset,
+// and running SVGO's convertPathData would resolve that transform into absolute
+// path coordinates (x≈−7299), placing all artwork outside the viewBox.
+// Any SVG added to the project that requires SVGO optimisation should be
+// pre-processed externally before committing.
+const svgrOptions = { svgo: false }
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'cdn.sanity.io' }],
@@ -10,7 +18,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     rules: {
       '*.svg': {
-        loaders: ['@svgr/webpack'],
+        loaders: [{ loader: '@svgr/webpack', options: svgrOptions }],
         as: '*.js',
       },
     },
@@ -34,7 +42,7 @@ const nextConfig: NextConfig = {
         test: /\.svg$/i,
         issuer: fileLoaderRule?.issuer,
         resourceQuery: { not: [...(fileLoaderRule?.resourceQuery?.not ?? []), /url/] },
-        use: ['@svgr/webpack'],
+        use: [{ loader: '@svgr/webpack', options: svgrOptions }],
       }
     )
 
