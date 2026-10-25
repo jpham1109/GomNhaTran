@@ -7,3 +7,5 @@ dist/
 tsconfig.tsbuildinfo
 .claude
 ai/
+# v0 design export — read-only reference, not part of the app
+v0-import/
